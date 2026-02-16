@@ -1,4 +1,4 @@
-import { User } from "../../../server-admin/src/users/user.model.js";
+import { User } from "../../../kinRural-server-admin/src/users/user.model.js";
 
 export const getUserProfile = async (req, res, next) => {
     try {

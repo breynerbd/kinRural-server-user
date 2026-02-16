@@ -1,7 +1,7 @@
 import { db } from "../../configs/db.js";
-import { Transaction } from "../../../server-admin/src/transactions/transaction.model.js";
-import { Account } from "../../../server-admin/src/accounts/account.model.js";
-import { Movement } from "../../../server-admin/src/movements/movement.model.js";
+import { Transaction } from "../../../kinRural-server-admin/src/transactions/transaction.model.js";
+import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Movement } from "../../../kinRural-server-admin/src/movements/movement.model.js";
 
 
 export const createTransaction = async (req, res) => {

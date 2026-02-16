@@ -1,5 +1,5 @@
-import { Transaction } from "../../../server-admin/src/transactions/transaction.model.js";
-import { Account } from "../../../server-admin/src/accounts/account.model.js";
+import { Transaction } from "../../../kinRural-server-admin/src/transactions/transaction.model.js";
+import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
 
 export const getMyTransactions = async (req, res, next) => {
     try {
