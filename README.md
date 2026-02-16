@@ -1,0 +1,1 @@
+# kinRural-server-user
