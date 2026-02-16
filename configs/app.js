@@ -12,6 +12,7 @@ import { movementRouter } from "../src/movements/movement.router.js";
 import { errorHandler } from "../middlewares/handle-errors.js";
 import { userRouter } from "../src/users/user.router.js";
 
+
 export const initServerUser = () => {
     const app = express();
     app.use(express.json());
