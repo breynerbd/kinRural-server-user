@@ -1,4 +1,4 @@
-import { db } from "../kinRural-server-admin/configs/db.js";
+import { db } from "../../kinRural-server-admin/configs/db.js";
 
 export { db };
 
