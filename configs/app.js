@@ -12,6 +12,7 @@ import { movementRouter } from "../src/movements/movement.router.js";
 import { errorHandler } from "../middlewares/handle-errors.js";
 import { userRouter } from "../src/users/user.router.js";
 import { loanRouter } from "../src/loans/loan.router.js";
+import { cardRouter } from "../src/cards/card.router.js";
 
 export const initServerUser = () => {
     const app = express();
@@ -27,6 +28,7 @@ export const initServerUser = () => {
     app.use("/movements", movementRouter);
     app.use("/users", userRouter);
     app.use("/loans", loanRouter);
+    app.use("/cards", cardRouter);
 
     app.get("/health", (req, res) => {
         res.status(200).json({
