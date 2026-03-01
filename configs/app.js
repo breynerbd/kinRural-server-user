@@ -14,6 +14,7 @@ import { userRouter } from "../src/users/user.router.js";
 import { loanRouter } from "../src/loans/loan.router.js";
 import { cardRouter } from "../src/cards/card.router.js";
 import { accountRequestRouter } from "../src/accountRequest/accountRequest.router.js";
+import { beneficiaryRouter } from "../src/beneficiaries/beneficiary.router.js";
 
 export const initServerUser = () => {
     const app = express();
@@ -31,6 +32,7 @@ export const initServerUser = () => {
     app.use("/loans", loanRouter);
     app.use("/cards", cardRouter);
     app.use("/account-requests", accountRequestRouter);
+    app.use("/beneficiaries", beneficiaryRouter);
 
     app.get("/health", (req, res) => {
         res.status(200).json({

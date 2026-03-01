@@ -2,27 +2,61 @@ import { db } from "../../configs/db.js";
 import { Transaction } from "../../../kinRural-server-admin/src/transactions/transaction.model.js";
 import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
 import { Movement } from "../../../kinRural-server-admin/src/movements/movement.model.js";
-
+import { Beneficiary } from "../beneficiaries/beneficiary.model.js";
 
 export const createTransaction = async (req, res) => {
     const t = await db.transaction();
+
     try {
-        const { tipo, monto, cuenta_destino_id } = req.body;
+        const { tipo, monto, alias, cuenta_destino_id } = req.body;
+
+        let cuentaDestino = null;
 
         const cuentaOrigen = await Account.findOne({
             where: { user_id: req.user.id }
         });
-        if (!cuentaOrigen) throw new Error("Cuenta origen no encontrada para este usuario");
 
-        if (tipo === "RETIRO" && parseFloat(cuentaOrigen.saldo) < monto) {
+        if (!cuentaOrigen)
+            throw new Error("Cuenta origen no encontrada para este usuario");
+
+        if (tipo === "RETIRO" && parseFloat(cuentaOrigen.saldo) < monto)
             throw new Error("Saldo insuficiente para retiro");
-        }
-        let cuentaDestino = null;
+
         if (tipo === "TRANSFERENCIA") {
-            if (!cuenta_destino_id) throw new Error("Debe indicar la cuenta de destino");
-            cuentaDestino = await Account.findByPk(cuenta_destino_id);
-            if (!cuentaDestino) throw new Error("Cuenta de destino no encontrada");
-            if (parseFloat(cuentaOrigen.saldo) < monto) throw new Error("Saldo insuficiente para transferencia");
+
+            if (alias) {
+
+                const beneficiary = await Beneficiary.findOne({
+                    where: {
+                        alias,
+                        user_id: req.user.id
+                    }
+                });
+
+                if (!beneficiary)
+                    throw new Error("Beneficiario no encontrado");
+
+                cuentaDestino = await Account.findByPk(beneficiary.account_id);
+
+                if (!cuentaDestino)
+                    throw new Error("Cuenta destino no encontrada");
+
+            }
+
+            else if (cuenta_destino_id) {
+
+                cuentaDestino = await Account.findByPk(cuenta_destino_id);
+
+                if (!cuentaDestino)
+                    throw new Error("Cuenta destino no encontrada");
+            }
+
+            else {
+                throw new Error("Debe indicar alias o cuenta_destino_id");
+            }
+
+            if (parseFloat(cuentaOrigen.saldo) < monto)
+                throw new Error("Saldo insuficiente para transferencia");
         }
 
         const transaction = await Transaction.create({
@@ -32,13 +66,18 @@ export const createTransaction = async (req, res) => {
             cuenta_destino_id: cuentaDestino ? cuentaDestino.id : null
         }, { transaction: t });
 
-        if (tipo === "DEPOSITO") cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) + parseFloat(monto);
-        if (tipo === "RETIRO") cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
+        if (tipo === "DEPOSITO")
+            cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) + parseFloat(monto);
+
+        if (tipo === "RETIRO")
+            cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
+
         if (tipo === "TRANSFERENCIA") {
             cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
             cuentaDestino.saldo = parseFloat(cuentaDestino.saldo) + parseFloat(monto);
             await cuentaDestino.save({ transaction: t });
         }
+
         await cuentaOrigen.save({ transaction: t });
 
         await Movement.create({
@@ -60,11 +99,18 @@ export const createTransaction = async (req, res) => {
         }
 
         await t.commit();
-        res.status(200).json({ success: true, transaction });
+
+        res.status(200).json({
+            success: true,
+            transaction
+        });
 
     } catch (error) {
         await t.rollback();
-        res.status(400).json({ success: false, message: error.message });
+        res.status(400).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 
