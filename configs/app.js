@@ -13,6 +13,7 @@ import { errorHandler } from "../middlewares/handle-errors.js";
 import { userRouter } from "../src/users/user.router.js";
 import { loanRouter } from "../src/loans/loan.router.js";
 import { cardRouter } from "../src/cards/card.router.js";
+import { accountRequestRouter } from "../src/accountRequest/accountRequest.router.js";
 
 export const initServerUser = () => {
     const app = express();
@@ -29,6 +30,7 @@ export const initServerUser = () => {
     app.use("/users", userRouter);
     app.use("/loans", loanRouter);
     app.use("/cards", cardRouter);
+    app.use("/account-requests", accountRequestRouter);
 
     app.get("/health", (req, res) => {
         res.status(200).json({
