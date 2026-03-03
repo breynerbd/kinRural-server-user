@@ -1,5 +1,5 @@
-import { Statement } from "../../../kinRural-server-admin/src/statements/statement.model.js";
-import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Statement } from "./statement.model.js";
+import { Account } from "../accounts/account.model.js";
 
 export const getMyStatements = async (req, res) => {
     try {

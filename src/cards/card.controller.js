@@ -1,10 +1,10 @@
-import { Card } from "../../../kinRural-server-admin/src/cards/card.model.js";
-import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Card } from "./card.model.js";
+import { Account } from "../accounts/account.model.js";
 import {
     generateCardNumber,
     generateCVV,
     generateExpirationDate
-} from "../../../kinRural-server-admin/src/cards/cardGenerator.js";
+} from "./cardGenerator.js";
 
 export const requestCard = async (req, res) => {
     try {

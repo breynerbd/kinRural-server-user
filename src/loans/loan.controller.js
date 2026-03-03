@@ -1,36 +1,36 @@
-import { Loan, LoanInstallment } from "../../../kinRural-server-admin/src/loans/loan.model.js";
-import { User } from "../../../kinRural-server-admin/src/users/user.model.js";
+import { Loan, LoanInstallment } from "./loan.model.js";
+import { User } from "../users/user.model.js";
 
 const calcularCuota = (monto, tasaAnual, meses) => {
-    const tasaMensual = (tasaAnual/100)/12;
-    const cuota = monto * (tasaMensual*Math.pow(1+tasaMensual,meses)) /
-        (Math.pow(1+tasaMensual,meses)-1);
+    const tasaMensual = (tasaAnual / 100) / 12;
+    const cuota = monto * (tasaMensual * Math.pow(1 + tasaMensual, meses)) /
+        (Math.pow(1 + tasaMensual, meses) - 1);
     return parseFloat(cuota.toFixed(2));
 };
 
-export const quoteLoan = async (req,res)=>{
+export const quoteLoan = async (req, res) => {
     const { monto, tasa_interes, plazo_meses } = req.body;
 
-    const cuota = calcularCuota(monto,tasa_interes,plazo_meses);
+    const cuota = calcularCuota(monto, tasa_interes, plazo_meses);
 
     res.json({
-        success:true,
+        success: true,
         cuota,
-        total_pagar: (cuota*plazo_meses).toFixed(2)
+        total_pagar: (cuota * plazo_meses).toFixed(2)
     });
 };
 
-export const requestLoan = async (req,res)=>{
-    try{
+export const requestLoan = async (req, res) => {
+    try {
 
-        const { 
+        const {
             user_id,
-            monto, 
-            tasa_interes, 
-            plazo_meses, 
-            tipo_tasa, 
-            meses_recalculo, 
-            account_id 
+            monto,
+            tasa_interes,
+            plazo_meses,
+            tipo_tasa,
+            meses_recalculo,
+            account_id
         } = req.body;
 
         const user = await User.findByPk(user_id);
@@ -41,20 +41,20 @@ export const requestLoan = async (req,res)=>{
                 message: "Usuario no encontrado"
             });
 
-        const cuota = calcularCuota(monto,tasa_interes,plazo_meses);
+        const cuota = calcularCuota(monto, tasa_interes, plazo_meses);
 
         const prestamosActivos = await Loan.findAll({
-            where:{ user_id, estado:"ACTIVE" }
+            where: { user_id, estado: "ACTIVE" }
         });
 
         const sumaCuotas = prestamosActivos.reduce(
-            (acc,l)=>acc+parseFloat(l.cuota_mensual || 0),0
+            (acc, l) => acc + parseFloat(l.cuota_mensual || 0), 0
         );
 
-        if(sumaCuotas + cuota > user.ingresos_mensuales*0.40)
+        if (sumaCuotas + cuota > user.ingresos_mensuales * 0.40)
             return res.status(400).json({
-                success:false,
-                message:"Supera capacidad de endeudamiento"
+                success: false,
+                message: "Supera capacidad de endeudamiento"
             });
 
         const loan = await Loan.create({
@@ -65,13 +65,13 @@ export const requestLoan = async (req,res)=>{
             tipo_tasa,
             plazo_meses,
             meses_recalculo,
-            estado:"PENDING"
+            estado: "PENDING"
         });
 
-        res.status(201).json({success:true,loan});
+        res.status(201).json({ success: true, loan });
 
-    }catch(error){
-        res.status(500).json({success:false,message:error.message});
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 

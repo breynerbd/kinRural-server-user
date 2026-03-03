@@ -1,4 +1,4 @@
-import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Account } from "./account.model.js";
 
 export const getMyAccounts = async (req, res, next) => {
     try {

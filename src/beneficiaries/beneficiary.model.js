@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { db } from "../../configs/db.js";
-import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Account } from "../accounts/account.model.js";
 
 export const Beneficiary = db.define("beneficiary", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },

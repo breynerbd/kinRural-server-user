@@ -1,5 +1,5 @@
-import { AccountRequest } from "../../../kinRural-server-admin/src/accountsRequest/accountRequest.model.js";
-import { User } from "../../../kinRural-server-admin/src/users/user.model.js";
+import { AccountRequest } from "./accountRequest.model.js";
+import { User } from "../users/user.model.js";
 // =============================
 // Usuario solicita cuenta
 // =============================

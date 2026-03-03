@@ -1,5 +1,5 @@
 import { Beneficiary } from "./beneficiary.model.js";
-import { Account } from "../../../kinRural-server-admin/src/accounts/account.model.js";
+import { Account } from "../accounts/account.model.js";
 
 export const createBeneficiary = async (req, res, next) => {
     try {
