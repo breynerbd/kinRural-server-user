@@ -1,46 +1,32 @@
 import { AccountRequest } from "./accountRequest.model.js";
-import { User } from "../users/user.model.js";
-// =============================
-// Usuario solicita cuenta
-// =============================
+import { getInternalUser } from "../utils/getInternalUser.js";
+
 export const createAccountRequest = async (req, res) => {
     try {
         const { tipo, dpi, fullName, phone, email } = req.body;
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
 
-        // 🔹 Obtener usuario logueado desde base de datos
-        const user = await User.findByPk(req.user.id);
-
-        if (!user) {
-            return res.status(404).json({
-                message: "Usuario no encontrado."
-            });
-        }
-
-        // 🔹 Validar que el DPI coincida
-        if (user.dpi !== dpi) {
+        if (internalUser.dpi !== dpi) {
             return res.status(400).json({
                 message: "El DPI ingresado no coincide con el usuario autenticado."
             });
         }
 
-        // 🔹 Validar que el nombre coincida
-        if (user.nombre !== fullName) {
+        if (internalUser.nombre !== fullName) {
             return res.status(400).json({
                 message: "El nombre ingresado no coincide con el usuario autenticado."
             });
         }
 
-        //validar que el email coincida
-        if (user.correo !== email) {
+        if (internalUser.correo !== email) {
             return res.status(400).json({
                 message: "El email ingresado no coincide con el usuario autenticado."
             });
         }
 
-        // 🔹 Validar solicitud pendiente
         const existing = await AccountRequest.findOne({
             where: {
-                user_id: req.user.id,
+                user_id: internalUser.id,
                 tipo,
                 status: "PENDIENTE"
             }
@@ -52,9 +38,8 @@ export const createAccountRequest = async (req, res) => {
             });
         }
 
-        // 🔹 Crear solicitud
         const request = await AccountRequest.create({
-            user_id: req.user.id,
+            user_id: internalUser.id,
             tipo,
             dpi,
             fullName,
@@ -74,8 +59,10 @@ export const createAccountRequest = async (req, res) => {
 
 export const getMyRequests = async (req, res) => {
     try {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const requests = await AccountRequest.findAll({
-            where: { user_id: req.user.id },
+            where: { user_id: internalUser.id },
             order: [["createdAt", "DESC"]]
         });
 

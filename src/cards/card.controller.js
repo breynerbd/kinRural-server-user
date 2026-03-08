@@ -5,13 +5,16 @@ import {
     generateCVV,
     generateExpirationDate
 } from "./cardGenerator.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const requestCard = async (req, res) => {
     try {
         const { account_id, tipo } = req.body;
 
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const account = await Account.findOne({
-            where: { id: account_id, user_id: req.user.id }
+            where: { id: account_id, user_id: internalUser.id }
         });
 
         if (!account)
@@ -20,13 +23,12 @@ export const requestCard = async (req, res) => {
         if (account.estado === "BLOQUEADA")
             return res.status(400).json({ message: "Cuenta bloqueada" });
 
-        // 🔹 VALIDACIÓN: solo una tarjeta de débito activa por cuenta
         if (tipo === "DEBITO") {
             const existingDebitCard = await Card.findOne({
                 where: {
                     account_id,
                     tipo: "DEBITO",
-                    estado: ["APROBADA", "ACTIVA"] // ajusta según tus estados reales
+                    estado: ["APROBADA", "ACTIVA"]
                 }
             });
 
@@ -37,10 +39,8 @@ export const requestCard = async (req, res) => {
             }
         }
 
-        // 🔹 VALIDACIÓN PARA TARJETAS DE CRÉDITO
         if (tipo === "CREDITO") {
 
-            // 1️⃣ Verificar si ya tiene una solicitud pendiente
             const pendingCreditCard = await Card.findOne({
                 where: {
                     account_id,
@@ -55,7 +55,6 @@ export const requestCard = async (req, res) => {
                 });
             }
 
-            // 2️⃣ Contar tarjetas activas/aprobadas
             const activeCreditCardsCount = await Card.count({
                 where: {
                     account_id,
@@ -87,26 +86,32 @@ export const requestCard = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
 export const getMyCards = async (req, res) => {
-    const cards = await Card.findAll({
-        include: {
-            model: Account,
-            where: { user_id: req.user.id }
-        }
-    });
+    try {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
 
-    const safeCards = cards.map(card => ({
-        id: card.id,
-        account_id: card.account_id,
-        tipo: card.tipo,
-        numero_tarjeta: "**** **** **** " + card.numero_tarjeta.slice(-4),
-        fecha_expiracion: card.fecha_expiracion,
-        estado: card.estado
-    }));
+        const cards = await Card.findAll({
+            include: {
+                model: Account,
+                where: { user_id: internalUser.id }
+            }
+        });
 
-    res.json({ success: true, cards: safeCards });
+        const safeCards = cards.map(card => ({
+            id: card.id,
+            account_id: card.account_id,
+            tipo: card.tipo,
+            numero_tarjeta: "**** **** **** " + card.numero_tarjeta.slice(-4),
+            fecha_expiracion: card.fecha_expiracion,
+            estado: card.estado
+        }));
+
+        res.status(200).json({ success: true, cards: safeCards });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
 };

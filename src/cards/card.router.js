@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { requestCard, getMyCards } from "./card.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const cardRouter = Router();
 
-cardRouter.post("/", onlyUser, requestCard);
-cardRouter.get("/", onlyUser, getMyCards);
+cardRouter.post("/", authenticateUser, requestCard);
+cardRouter.get("/", authenticateUser, getMyCards);

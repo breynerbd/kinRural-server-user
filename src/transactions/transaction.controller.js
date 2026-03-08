@@ -3,6 +3,7 @@ import { Transaction } from "./transaction.model.js";
 import { Account } from "../accounts/account.model.js";
 import { Movement } from "../movements/movement.model.js";
 import { Beneficiary } from "../beneficiaries/beneficiary.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const createTransaction = async (req, res) => {
     const t = await db.transaction();
@@ -12,8 +13,10 @@ export const createTransaction = async (req, res) => {
 
         let cuentaDestino = null;
 
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const cuentaOrigen = await Account.findOne({
-            where: { user_id: req.user.id }
+            where: { user_id: internalUser.id }
         });
 
         if (!cuentaOrigen)
@@ -24,12 +27,15 @@ export const createTransaction = async (req, res) => {
 
         if (tipo === "TRANSFERENCIA") {
 
+            if (cuenta_destino_id === cuentaOrigen.id)
+                throw new Error("No se puede transferir a la misma cuenta");
+
             if (alias) {
 
                 const beneficiary = await Beneficiary.findOne({
                     where: {
                         alias,
-                        user_id: req.user.id
+                        user_id: internalUser.id
                     }
                 });
 
@@ -73,6 +79,7 @@ export const createTransaction = async (req, res) => {
             cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
 
         if (tipo === "TRANSFERENCIA") {
+
             cuentaOrigen.saldo = parseFloat(cuentaOrigen.saldo) - parseFloat(monto);
             cuentaDestino.saldo = parseFloat(cuentaDestino.saldo) + parseFloat(monto);
             await cuentaDestino.save({ transaction: t });

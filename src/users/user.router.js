@@ -1,9 +1,8 @@
-// src/users/user.router.js
 import { Router } from "express";
 import { getUserProfile, updateUser } from "./user.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const userRouter = Router();
 
-userRouter.get("/", onlyUser, getUserProfile); // GET /user
-userRouter.put("/", onlyUser, updateUser);
+userRouter.get("/", authenticateUser, getUserProfile);
+userRouter.put("/", authenticateUser, updateUser);

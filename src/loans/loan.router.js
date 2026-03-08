@@ -1,23 +1,23 @@
 import { Router } from "express";
 import { quoteLoan, requestLoan, getMyLoans } from "./loan.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const loanRouter = Router();
 
 loanRouter.get(
-  "/user/:user_id",
-  onlyUser,
+  "/",
+  authenticateUser,
   getMyLoans
 );
 
 loanRouter.post(
   "/quote",
-  onlyUser,
+  authenticateUser,
   quoteLoan
 );
 
 loanRouter.post(
   "/request",
-  onlyUser,
+  authenticateUser,
   requestLoan
 );

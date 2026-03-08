@@ -1,23 +1,36 @@
 import { Transaction } from "../transactions/transaction.model.js";
 import { Account } from "../accounts/account.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const getMyTransactions = async (req, res, next) => {
     try {
-        // Primero obtenemos las cuentas del usuario
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const accounts = await Account.findAll({
-            where: { user_id: req.user.id },
+            where: { user_id: internalUser.id },
             attributes: ["id"]
         });
+
         const accountIds = accounts.map(a => a.id);
 
-        // Ahora obtenemos las transacciones donde el usuario es origen o destino
+        if (!accountIds.length) {
+            return res.status(200).json({
+                success: true,
+                transactions: []
+            });
+        }
+
         const transactions = await Transaction.findAll({
             where: {
-                cuenta_origen_id: accountIds.length ? accountIds : null
+                cuenta_origen_id: accountIds
             }
         });
 
-        res.status(200).json({ success: true, transactions });
+        res.status(200).json({
+            success: true,
+            transactions
+        });
+
     } catch (error) {
         next(error);
     }

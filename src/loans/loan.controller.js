@@ -1,5 +1,6 @@
 import { Loan, LoanInstallment } from "./loan.model.js";
 import { User } from "../users/user.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 const calcularCuota = (monto, tasaAnual, meses) => {
     const tasaMensual = (tasaAnual / 100) / 12;
@@ -75,23 +76,19 @@ export const requestLoan = async (req, res) => {
     }
 };
 
-
-
 export const getMyLoans = async (req, res) => {
     try {
 
-        const { user_id } = req.params;
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
 
-        const user = await User.findByPk(user_id);
-
-        if (!user)
+        if (!internalUser)
             return res.status(404).json({
                 success: false,
                 message: "Usuario no encontrado"
             });
 
         const loans = await Loan.findAll({
-            where: { user_id },
+            where: { user_id: internalUser.id },
             include: [{
                 model: LoanInstallment
             }],

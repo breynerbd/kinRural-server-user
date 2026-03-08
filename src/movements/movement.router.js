@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getMyTransactions } from "./movement.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const movementRouter = Router();
-movementRouter.get("/", onlyUser, getMyTransactions);
+movementRouter.get("/", authenticateUser, getMyTransactions);

@@ -1,11 +1,11 @@
 import { Beneficiary } from "./beneficiary.model.js";
 import { Account } from "../accounts/account.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const createBeneficiary = async (req, res, next) => {
     try {
         const { account_id, alias } = req.body;
 
-        // 1️⃣ Validar que exista la cuenta destino
         const cuentaDestino = await Account.findByPk(account_id);
         if (!cuentaDestino) {
             return res.status(404).json({
@@ -14,19 +14,19 @@ export const createBeneficiary = async (req, res, next) => {
             });
         }
 
-        // 2️⃣ No permitir agregarse a sí mismo
-        if (cuentaDestino.user_id === req.user.id) {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
+        if (cuentaDestino.user_id === internalUser.id) {
             return res.status(400).json({
                 success: false,
                 message: "No puede agregarse a sí mismo como beneficiario"
             });
         }
 
-        // 3️⃣ Verificar que no exista ya ese beneficiario para este usuario
         const existing = await Beneficiary.findOne({
             where: {
                 account_id,
-                user_id: req.user.id
+                user_id: internalUser.id
             }
         });
 
@@ -37,11 +37,10 @@ export const createBeneficiary = async (req, res, next) => {
             });
         }
 
-        // 4️⃣ Crear beneficiario
         const beneficiary = await Beneficiary.create({
             account_id,
             alias,
-            user_id: req.user.id   // 👈 dueño del beneficiario
+            user_id: internalUser.id
         });
 
         return res.status(201).json({
@@ -56,8 +55,10 @@ export const createBeneficiary = async (req, res, next) => {
 
 export const getMyBeneficiaries = async (req, res, next) => {
     try {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const beneficiaries = await Beneficiary.findAll({
-            where: { user_id: req.user.id }
+            where: { user_id: internalUser.id }
         });
 
         res.status(200).json({ success: true, beneficiaries });
@@ -70,8 +71,10 @@ export const deleteBeneficiary = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const beneficiary = await Beneficiary.findOne({
-            where: { id, user_id: req.user.id }
+            where: { id, user_id: internalUser.id }
         });
 
         if (!beneficiary)
@@ -91,8 +94,10 @@ export const updateBeneficiary = async (req, res, next) => {
         const { id } = req.params;
         const { alias } = req.body;
 
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const beneficiary = await Beneficiary.findOne({
-            where: { id, user_id: req.user.id }
+            where: { id, user_id: internalUser.id }
         });
 
         if (!beneficiary)

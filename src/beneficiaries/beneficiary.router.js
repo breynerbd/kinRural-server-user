@@ -5,11 +5,11 @@ import {
     deleteBeneficiary,
     updateBeneficiary
 } from "./beneficiary.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const beneficiaryRouter = Router();
 
-beneficiaryRouter.post("/", onlyUser, createBeneficiary);
-beneficiaryRouter.get("/", onlyUser, getMyBeneficiaries);
-beneficiaryRouter.delete("/:id", onlyUser, deleteBeneficiary);
-beneficiaryRouter.put("/:id", onlyUser, updateBeneficiary);
+beneficiaryRouter.post("/", authenticateUser, createBeneficiary);
+beneficiaryRouter.get("/", authenticateUser, getMyBeneficiaries);
+beneficiaryRouter.delete("/:id", authenticateUser, deleteBeneficiary);
+beneficiaryRouter.put("/:id", authenticateUser, updateBeneficiary);

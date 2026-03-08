@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { createAccountRequest, getMyRequests } from "./accountRequest.controller.js";
-import { onlyUser } from "../../middlewares/onlyUser.js";
+import { authenticateUser } from "../../middlewares/authenticateUser.js";
 
 export const accountRequestRouter = Router();
 
-accountRequestRouter.get("/", onlyUser, getMyRequests);
-accountRequestRouter.post("/", onlyUser, createAccountRequest);
+accountRequestRouter.get("/", authenticateUser, getMyRequests);
+accountRequestRouter.post("/", authenticateUser, createAccountRequest);

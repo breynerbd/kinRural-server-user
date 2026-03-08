@@ -1,11 +1,15 @@
 import { User } from "./user.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const getUserProfile = async (req, res, next) => {
     try {
-        const user = await User.findByPk(req.user.id); // Solo trae su propio usuario
-        if (!user) return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
 
-        res.status(200).json({ success: true, user });
+        if (!internalUser)
+            return res.status(404).json({ success: false, message: "Perfil no encontrado" });
+
+        res.status(200).json({ success: true, user: internalUser });
+
     } catch (error) {
         next(error);
     }
@@ -13,22 +17,39 @@ export const getUserProfile = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
     try {
-        const { id } = req.user;
-        const user = await User.findByPk(id);
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
 
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+        if (!internalUser) {
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado"
+            });
         }
 
-        // Campos permitidos para actualizar
-        const allowedFields = ["nombre", "apellido", "correo", "telefono", "direccion"];
+        const allowedFields = [
+            "nombre",
+            "apellido",
+            "dpi",
+            "correo",
+            "telefono",
+            "direccion",
+            "ingresos_mensuales"
+        ];
+
         const updates = {};
+
         for (const key of allowedFields) {
-            if (req.body[key] !== undefined) updates[key] = req.body[key];
+            if (req.body[key] !== undefined) {
+                updates[key] = req.body[key];
+            }
         }
 
-        await user.update(updates);
-        res.status(200).json({ success: true, user });
+        await internalUser.update(updates);
+
+        res.status(200).json({
+            success: true,
+            user: internalUser
+        });
 
     } catch (error) {
         next(error);
