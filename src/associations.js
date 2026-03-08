@@ -27,4 +27,9 @@ export const setupAssociations = () => {
 
     Account.hasMany(Statement, { foreignKey: "account_id" });
     Statement.belongsTo(Account, { foreignKey: "account_id" });
+
+    User.belongsToMany(Account, { through: Beneficiary, foreignKey: "user_id", otherKey: "account_id" });
+    Account.belongsToMany(User, { through: Beneficiary, foreignKey: "account_id", otherKey: "user_id" });
+
+
 };
