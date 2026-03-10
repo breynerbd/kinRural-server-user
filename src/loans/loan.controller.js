@@ -23,9 +23,15 @@ export const quoteLoan = async (req, res) => {
 
 export const requestLoan = async (req, res) => {
     try {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
+        if (!internalUser)
+            return res.status(404).json({
+                success: false,
+                message: "Usuario no encontrado"
+            });
 
         const {
-            user_id,
             monto,
             tasa_interes,
             plazo_meses,
@@ -34,7 +40,7 @@ export const requestLoan = async (req, res) => {
             account_id
         } = req.body;
 
-        const user = await User.findByPk(user_id);
+        const user = await User.findByPk(internalUser.id);
 
         if (!user)
             return res.status(404).json({
@@ -45,7 +51,7 @@ export const requestLoan = async (req, res) => {
         const cuota = calcularCuota(monto, tasa_interes, plazo_meses);
 
         const prestamosActivos = await Loan.findAll({
-            where: { user_id, estado: "ACTIVE" }
+            where: { user_id: internalUser.id, estado: "ACTIVE" }
         });
 
         const sumaCuotas = prestamosActivos.reduce(
@@ -59,7 +65,7 @@ export const requestLoan = async (req, res) => {
             });
 
         const loan = await Loan.create({
-            user_id,
+            user_id: internalUser.id,
             account_id,
             monto,
             tasa_interes,

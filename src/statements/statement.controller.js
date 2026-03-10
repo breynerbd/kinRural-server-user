@@ -1,10 +1,13 @@
 import { Statement } from "./statement.model.js";
 import { Account } from "../accounts/account.model.js";
+import { getInternalUser } from "../utils/getInternalUser.js";
 
-export const getMyStatements = async (req, res) => {
+export const getMyStatements = async (req, res, next) => {
     try {
+        const internalUser = await getInternalUser(req.user.id, req.user.email);
+
         const accounts = await Account.findAll({
-            where: { user_id: req.user.id },
+            where: { user_id: internalUser.id },
             attributes: ['id']
         });
 
@@ -15,8 +18,11 @@ export const getMyStatements = async (req, res) => {
             order: [['anio', 'DESC'], ['mes', 'DESC']]
         });
 
-        res.status(200).json({ success: true, statements });
+        res.status(200).json({
+            success: true,
+            statements
+        });
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        next(error);
     }
 };
