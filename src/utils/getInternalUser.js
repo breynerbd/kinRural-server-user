@@ -1,6 +1,10 @@
 import { User } from "../users/user.model.js";
 
 export const getInternalUser = async (authId, email) => {
+    if (!authId) {
+        throw new Error("authId no puede ser undefined");
+    }
+
     let user = await User.findOne({
         where: { auth_id: authId }
     });

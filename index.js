@@ -22,7 +22,7 @@ const startServerUser = async () => {
         await dbConnection();
         setupAssociations();
 
-        await db.sync({ alter: true });
+        await db.sync({ alter: false });
         console.log("✅ Tablas USER sincronizadas");
 
         const app = initServerUser();

@@ -14,7 +14,7 @@ export const authenticateUser = (req, res, next) => {
         req.user = {
             id: decoded.sub,
             email: decoded.email,
-            role: decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+            role: decoded.role   // usar "role" tal como se emite en C#
         };
 
         next();
