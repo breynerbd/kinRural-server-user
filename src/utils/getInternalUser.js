@@ -15,7 +15,7 @@ export const getInternalUser = async (authId, email) => {
             nombre: "Pendiente",
             apellido: "Pendiente",
             correo: email,
-            dpi: "PENDIENTE",
+            dpi: null,
             telefono: "PENDIENTE",
             direccion: "PENDIENTE",
             ingresos_mensuales: 0,
