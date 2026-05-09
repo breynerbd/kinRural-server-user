@@ -64,6 +64,13 @@ export const requestLoan = async (req, res) => {
                 message: "Supera capacidad de endeudamiento"
             });
 
+        // ------------------------------
+        // Redondear saldo pendiente
+        let saldoPendiente = monto;
+        saldoPendiente = parseFloat(saldoPendiente.toFixed(2));
+        if (saldoPendiente < 0.01) saldoPendiente = 0;
+        // ------------------------------
+
         const loan = await Loan.create({
             user_id: internalUser.id,
             account_id,
@@ -72,6 +79,8 @@ export const requestLoan = async (req, res) => {
             tipo_tasa,
             plazo_meses,
             meses_recalculo,
+            cuota_mensual: cuota,
+            saldo_pendiente: saldoPendiente,
             estado: "PENDING"
         });
 
