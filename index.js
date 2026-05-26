@@ -18,21 +18,22 @@ import "./src/accountRequest/accountRequest.model.js";
 const PORT = process.env.PORT || 3006;
 
 const startServerUser = async () => {
-    try {
-        await dbConnection();
-        setupAssociations();
+  try {
+    await dbConnection();
+    setupAssociations();
 
-        await db.sync({ alter: false });
-        console.log("✅ Tablas USER sincronizadas");
+    console.log("✅ Tablas USER sincronizadas");
 
-        const app = initServerUser();
-        app.listen(PORT, () => {
-            console.log(`🚀 Kinrural USER API running at http://localhost:${PORT}/kinrural/v1`);
-        });
-    } catch (error) {
-        console.error("❌ Error starting USER server:", error);
-        process.exit(1);
-    }
+    const app = initServerUser();
+    app.listen(PORT, () => {
+      console.log(
+        `🚀 Kinrural USER API running at http://localhost:${PORT}/kinrural/v1`,
+      );
+    });
+  } catch (error) {
+    console.error("❌ Error starting USER server:", error);
+    process.exit(1);
+  }
 };
 
 startServerUser();
