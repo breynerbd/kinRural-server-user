@@ -25,7 +25,10 @@ export const quoteLoan = async (req, res) => {
 
 export const requestLoan = async (req, res) => {
   try {
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     if (!internalUser)
       return res.status(404).json({
@@ -108,7 +111,10 @@ export const requestLoan = async (req, res) => {
 
 export const getMyLoans = async (req, res) => {
   try {
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     if (!internalUser)
       return res.status(404).json({

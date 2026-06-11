@@ -3,7 +3,10 @@ import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const getUserProfile = async (req, res, next) => {
   try {
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     if (!internalUser)
       return res
@@ -21,7 +24,7 @@ export const updateUser = async (req, res, next) => {
     // =========================
     // BUSCAR USUARIO INTERNO
     // =========================
-    let internalUser = await getInternalUser(req.user.id);
+    let internalUser = await getInternalUser(req.user.auth_id);
 
     // =========================
     // CAMPOS PERMITIDOS
@@ -49,7 +52,7 @@ export const updateUser = async (req, res, next) => {
     // =========================
     if (!internalUser) {
       internalUser = await User.create({
-        auth_id: req.user.id,
+        auth_id: req.user.auth_id,
         role: "USER",
         ...updates,
       });

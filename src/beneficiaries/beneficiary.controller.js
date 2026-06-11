@@ -14,7 +14,10 @@ export const createBeneficiary = async (req, res, next) => {
       });
     }
 
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     if (cuentaDestino.user_id === internalUser.id) {
       return res.status(400).json({
@@ -54,7 +57,10 @@ export const createBeneficiary = async (req, res, next) => {
 
 export const getMyBeneficiaries = async (req, res, next) => {
   try {
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
     console.log("REQ USER:", req.user);
     console.log("INTERNAL USER:", internalUser);
 
@@ -72,7 +78,10 @@ export const deleteBeneficiary = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     const beneficiary = await Beneficiary.findOne({
       where: { id, user_id: internalUser.id },
@@ -98,7 +107,10 @@ export const updateBeneficiary = async (req, res, next) => {
     const { id } = req.params;
     const { alias } = req.body;
 
-    const internalUser = await getInternalUser(req.user.id, req.user.email);
+    const internalUser = await getInternalUser(
+      req.user.auth_id,
+      req.user.email,
+    );
 
     const beneficiary = await Beneficiary.findOne({
       where: { id, user_id: internalUser.id },
