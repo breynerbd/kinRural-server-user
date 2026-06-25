@@ -1,6 +1,9 @@
+// movement.controller.js — versión corregida
 import { Transaction } from "../transactions/transaction.model.js";
 import { Account } from "../accounts/account.model.js";
-import { getInternalUser } from "../utils/getInternalUser.js";
+import { Movement } from "../movements/movement.model.js"; // ← AÑADIR
+import { getInternalUser } from "../utils/getInternalUser.js"; // ← FALTABA ESTE
+import { Op } from "sequelize"; // ← AÑADIR
 
 export const getMyTransactions = async (req, res, next) => {
   try {
@@ -17,22 +20,17 @@ export const getMyTransactions = async (req, res, next) => {
     const accountIds = accounts.map((a) => a.id);
 
     if (!accountIds.length) {
-      return res.status(200).json({
-        success: true,
-        transactions: [],
-      });
+      return res.status(200).json({ success: true, transactions: [] });
     }
 
-    const transactions = await Transaction.findAll({
+    const movements = await Movement.findAll({
       where: {
-        cuenta_origen_id: accountIds,
+        account_id: { [Op.in]: accountIds },
       },
+      order: [["createdAt", "DESC"]],
     });
 
-    res.status(200).json({
-      success: true,
-      transactions,
-    });
+    res.status(200).json({ success: true, transactions: movements });
   } catch (error) {
     next(error);
   }

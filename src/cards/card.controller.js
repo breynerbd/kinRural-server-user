@@ -106,11 +106,13 @@ export const getMyCards = async (req, res) => {
       },
     });
 
+    // 🚀 Enviamos el número real completo para que el frontend lo maneje
     const safeCards = cards.map((card) => ({
       id: card.id,
       account_id: card.account_id,
       tipo: card.tipo,
-      numero_tarjeta: "**** **** **** " + card.numero_tarjeta.slice(-4),
+      numero_tarjeta: card.numero_tarjeta, // ✨ Cambiado: enviamos el número completo
+      cvv: card.cvv,
       fecha_expiracion: card.fecha_expiracion,
       estado: card.estado,
     }));

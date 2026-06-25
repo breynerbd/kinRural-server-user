@@ -3,10 +3,7 @@ import { getInternalUser } from "../utils/getInternalUser.js";
 
 export const getUserProfile = async (req, res, next) => {
   try {
-    const internalUser = await getInternalUser(
-      req.user.auth_id,
-      req.user.email,
-    );
+    const internalUser = await getInternalUser(req.user.auth_id);
 
     if (!internalUser)
       return res

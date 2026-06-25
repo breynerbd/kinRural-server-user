@@ -81,10 +81,13 @@ export const createTransaction = async (req, res) => {
 
     await cuentaOrigen.save({ transaction: t });
 
+    // Definimos la lógica dinámica para el movimiento de origen
+    const esEgreso = ["RETIRO", "TRANSFERENCIA"].includes(tipo);
+
     await Movement.create(
       {
         tipo_operacion: tipo,
-        tipo_movimiento: tipo === "DEPOSITO" ? "CREDITO" : "DEBITO",
+        tipo_movimiento: esEgreso ? "DEBITO" : "CREDITO",
         monto,
         transaction_id: transaction.id,
         account_id: cuentaOrigen.id,
@@ -96,7 +99,7 @@ export const createTransaction = async (req, res) => {
       await Movement.create(
         {
           tipo_operacion: "TRANSFERENCIA",
-          tipo_movimiento: "CREDITO",
+          tipo_movimiento: "CREDITO", // ← El destino SIEMPRE recibe (CREDITO)
           monto,
           transaction_id: transaction.id,
           account_id: cuentaDestino.id,

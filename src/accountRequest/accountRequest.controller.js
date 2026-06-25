@@ -9,24 +9,35 @@ export const createAccountRequest = async (req, res) => {
       req.user.email,
     );
 
+    // 1. Validación de DPI
     if (internalUser.dpi !== dpi) {
       return res.status(400).json({
         message: "El DPI ingresado no coincide con el usuario autenticado.",
       });
     }
 
-    if (internalUser.nombre !== fullName) {
+    // 🔥 CAMBIO AQUÍ: Concatenamos de forma idéntica al frontend para validar el nombre completo
+    const dbFullName = internalUser.apellido
+      ? `${internalUser.nombre} ${internalUser.apellido}`.trim()
+      : internalUser.nombre
+        ? internalUser.nombre.trim()
+        : "";
+
+    if (dbFullName !== fullName?.trim()) {
       return res.status(400).json({
-        message: "El nombre ingresado no coincide con el usuario autenticado.",
+        message:
+          "El nombre completo ingresado no coincide con el usuario autenticado.",
       });
     }
 
+    // 3. Validación de Email
     if (internalUser.correo !== email) {
       return res.status(400).json({
         message: "El email ingresado no coincide con el usuario autenticado.",
       });
     }
 
+    // 4. Verificación de duplicados PENDIENTES
     const existing = await AccountRequest.findOne({
       where: {
         user_id: internalUser.id,
@@ -41,6 +52,7 @@ export const createAccountRequest = async (req, res) => {
       });
     }
 
+    // 5. Creación guardando el Nombre Completo (Nombre + Apellido)
     const request = await AccountRequest.create({
       user_id: internalUser.id,
       tipo,
