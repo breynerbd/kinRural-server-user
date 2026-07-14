@@ -30,51 +30,14 @@
 
 ## 🚀 Instalación y Configuración
 
-### 1. Crear carpeta principal
+## Configuración
 
-```bash
-mkdir kinrural
-cd kinrural
-```
+Antes de ejecutar el proyecto, completa los siguientes valores:
 
-### 2. Clonar repositorios
+## `kinRural-server-user/.env`
 
-```bash
-# Servidor Admin
-git clone https://github.com/breynerbd/kinRural-server-admin.git kinRural-server-admin
-
-# Servidor User
-git clone https://github.com/breynerbd/kinRural-server-user.git kinRural-server-user
-```
-
-### 3. Instalar dependencias
-
-**📱 User Service**
-
-```bash
-cd ./kinRural-server-user/
-npm install
-```
-
-**🛠️ Admin Service**
-
-```bash
-cd ../kinRural-server-admin/
-npm install
-```
-
-### 4. Levantar contenedor Docker
-
-```bash
-docker compose up --build
-```
-
-> ✅ Esto levantará automáticamente:
-> - API Admin
-> - API User
-> - Base de datos
->
-> Todo dentro de contenedores Docker.
+- **EXCHANGE_API_KEY**
+- **JWT_SECRET**
 
 ---
 
@@ -90,10 +53,10 @@ http://localhost:3006/kinrural/v1/user
 
 ### 👤 Perfil
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `GET` | `/users` | Ver mi perfil | User | — |
-| `PUT` | `/users` | Actualizar perfil | User | `{ "nombre", "apellido", "telefono", "direccion", "ingresos_mensuales" }` |
+| Método | Endpoint | Descripción       | Auth | Body                                                                      |
+| ------ | -------- | ----------------- | ---- | ------------------------------------------------------------------------- |
+| `GET`  | `/users` | Ver mi perfil     | User | —                                                                         |
+| `PUT`  | `/users` | Actualizar perfil | User | `{ "nombre", "apellido", "telefono", "direccion", "ingresos_mensuales" }` |
 
 **Ejemplo — Actualizar perfil (`PUT /users`):**
 
@@ -111,17 +74,17 @@ http://localhost:3006/kinrural/v1/user
 
 ### 💰 Mis Cuentas
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `GET` | `/accounts` | Ver mis cuentas | User | — |
+| Método | Endpoint    | Descripción     | Auth | Body |
+| ------ | ----------- | --------------- | ---- | ---- |
+| `GET`  | `/accounts` | Ver mis cuentas | User | —    |
 
 ---
 
 ### 📩 Mis Solicitudes
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `GET` | `/account-requests` | Ver mis solicitudes | User | — |
+| Método | Endpoint            | Descripción                  | Auth | Body                                                         |
+| ------ | ------------------- | ---------------------------- | ---- | ------------------------------------------------------------ |
+| `GET`  | `/account-requests` | Ver mis solicitudes          | User | —                                                            |
 | `POST` | `/account-requests` | Solicitar apertura de cuenta | User | `{ "tipo", "dpi", "nombre_completo", "telefono", "correo" }` |
 
 **Ejemplo — Solicitar apertura de cuenta (`POST /account-requests`):**
@@ -142,12 +105,12 @@ http://localhost:3006/kinrural/v1/user
 
 ### 👥 Beneficiarios
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `POST` | `/beneficiaries` | Agregar beneficiario | User | `{ "cuenta_id", "alias" }` |
-| `GET` | `/beneficiaries` | Listar beneficiarios | User | — |
-| `PUT` | `/beneficiaries/:id` | Actualizar beneficiario | User | `{ "alias" }` |
-| `DELETE` | `/beneficiaries/:id` | Eliminar beneficiario | User | — |
+| Método   | Endpoint             | Descripción             | Auth | Body                       |
+| -------- | -------------------- | ----------------------- | ---- | -------------------------- |
+| `POST`   | `/beneficiaries`     | Agregar beneficiario    | User | `{ "cuenta_id", "alias" }` |
+| `GET`    | `/beneficiaries`     | Listar beneficiarios    | User | —                          |
+| `PUT`    | `/beneficiaries/:id` | Actualizar beneficiario | User | `{ "alias" }`              |
+| `DELETE` | `/beneficiaries/:id` | Eliminar beneficiario   | User | —                          |
 
 **Ejemplo — Agregar beneficiario (`POST /beneficiaries`):**
 
@@ -172,10 +135,10 @@ http://localhost:3006/kinrural/v1/user
 
 ### 💳 Tarjetas (Usuario)
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
+| Método | Endpoint | Descripción       | Auth | Body                      |
+| ------ | -------- | ----------------- | ---- | ------------------------- |
 | `POST` | `/cards` | Solicitar tarjeta | User | `{ "cuenta_id", "tipo" }` |
-| `GET` | `/cards` | Ver mis tarjetas | User | — |
+| `GET`  | `/cards` | Ver mis tarjetas  | User | —                         |
 
 **Ejemplo — Solicitar tarjeta (`POST /cards`):**
 
@@ -192,11 +155,11 @@ http://localhost:3006/kinrural/v1/user
 
 ### 📝 Préstamos (Usuario)
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `POST` | `/loans/quote` | Simular préstamo | User | `{ "monto", "tasa_interes", "plazo_meses" }` |
-| `POST` | `/loans/request` | Solicitar préstamo | User | `{ "user_id", "cuenta_id", "monto", "tasa_interes", "plazo_meses", "tipo_tasa", "meses_recalculo" }` |
-| `GET` | `/loans/user/:user_id` | Ver mis préstamos | User | — |
+| Método | Endpoint               | Descripción        | Auth | Body                                                                                                 |
+| ------ | ---------------------- | ------------------ | ---- | ---------------------------------------------------------------------------------------------------- |
+| `POST` | `/loans/quote`         | Simular préstamo   | User | `{ "monto", "tasa_interes", "plazo_meses" }`                                                         |
+| `POST` | `/loans/request`       | Solicitar préstamo | User | `{ "user_id", "cuenta_id", "monto", "tasa_interes", "plazo_meses", "tipo_tasa", "meses_recalculo" }` |
+| `GET`  | `/loans/user/:user_id` | Ver mis préstamos  | User | —                                                                                                    |
 
 **Ejemplo — Simular préstamo (`POST /loans/quote`):**
 
@@ -228,19 +191,19 @@ http://localhost:3006/kinrural/v1/user
 
 ### 💸 Movimientos
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `GET` | `/movements` | Historial de movimientos | User | — |
+| Método | Endpoint     | Descripción              | Auth | Body |
+| ------ | ------------ | ------------------------ | ---- | ---- |
+| `GET`  | `/movements` | Historial de movimientos | User | —    |
 
 ---
 
 ### 💳 Transacciones (Usuario)
 
-| Método | Endpoint | Descripción | Auth | Body |
-|--------|----------|-------------|------|------|
-| `POST` | `/transactions` | Depósito | User | `{ "tipo": "DEPOSITO", "monto" }` |
-| `POST` | `/transactions` | Retiro | User | `{ "tipo": "RETIRO", "monto" }` |
-| `POST` | `/transactions` | Transferencia por alias | User | `{ "tipo": "TRANSFERENCIA", "monto", "alias" }` |
+| Método | Endpoint        | Descripción                    | Auth | Body                                                        |
+| ------ | --------------- | ------------------------------ | ---- | ----------------------------------------------------------- |
+| `POST` | `/transactions` | Depósito                       | User | `{ "tipo": "DEPOSITO", "monto" }`                           |
+| `POST` | `/transactions` | Retiro                         | User | `{ "tipo": "RETIRO", "monto" }`                             |
+| `POST` | `/transactions` | Transferencia por alias        | User | `{ "tipo": "TRANSFERENCIA", "monto", "alias" }`             |
 | `POST` | `/transactions` | Transferencia por ID de cuenta | User | `{ "tipo": "TRANSFERENCIA", "monto", "cuenta_destino_id" }` |
 
 **Ejemplo — Depósito (`POST /transactions`):**
@@ -248,7 +211,7 @@ http://localhost:3006/kinrural/v1/user
 ```json
 {
   "tipo": "DEPOSITO",
-  "monto": 100.50
+  "monto": 100.5
 }
 ```
 
@@ -257,7 +220,7 @@ http://localhost:3006/kinrural/v1/user
 ```json
 {
   "tipo": "RETIRO",
-  "monto": 50.00
+  "monto": 50.0
 }
 ```
 
@@ -266,7 +229,7 @@ http://localhost:3006/kinrural/v1/user
 ```json
 {
   "tipo": "TRANSFERENCIA",
-  "monto": 150.00,
+  "monto": 150.0,
   "alias": "El águila"
 }
 ```
@@ -276,7 +239,7 @@ http://localhost:3006/kinrural/v1/user
 ```json
 {
   "tipo": "TRANSFERENCIA",
-  "monto": 150.00,
+  "monto": 150.0,
   "cuenta_destino_id": 123
 }
 ```
@@ -287,15 +250,15 @@ http://localhost:3006/kinrural/v1/user
 
 ## ⚙️ Reglas de Negocio
 
-| Regla | Detalle |
-|-------|---------|
-| 📈 **Interés anual** | 5% sobre cuentas de ahorro |
-| ⚠️ **Mora** | Después de 30 días → estado `EN_MORA` + 3% de recargo |
+| Regla                    | Detalle                                                    |
+| ------------------------ | ---------------------------------------------------------- |
+| 📈 **Interés anual**     | 5% sobre cuentas de ahorro                                 |
+| ⚠️ **Mora**              | Después de 30 días → estado `EN_MORA` + 3% de recargo      |
 | 🏦 **Límite de cuentas** | Máx. **2 cuentas de ahorro** y **1 monetaria** por usuario |
-| 💸 **Transferencias** | Límite de **Q10,000 diarios** |
+| 💸 **Transferencias**    | Límite de **Q10,000 diarios**                              |
 
 > ⚠️ **Importante:** El estado `EN_MORA` se activa automáticamente. Ejecute `POST /loans/check-mora` periódicamente para mantener los estados actualizados.
 
 ---
 
-*Documentación generada para el proyecto **KinRural** — Sistema Bancario Rural* 🌾
+_Documentación generada para el proyecto **KinRural** — Sistema Bancario Rural_ 🌾
